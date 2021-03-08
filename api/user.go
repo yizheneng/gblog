@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,7 @@ import (
 	"github.com/yizheneng/gblog/model"
 )
 
+// 添加用户
 func AddUser(c *gin.Context) {
 	var user model.User
 	_ = c.ShouldBindJSON(&user)
@@ -46,6 +48,7 @@ func AddUser(c *gin.Context) {
 	})
 }
 
+// 检查Token
 func CheckToken(c *gin.Context) {
 	token := c.PostForm("token")
 
@@ -66,18 +69,87 @@ func CheckToken(c *gin.Context) {
 	})
 }
 
-func GetUsers() {
+// 获取用户列表
+func GetUsers(c *gin.Context) {
 
 }
 
-func Delete() {
+// 删除用户
+func Delete(c *gin.Context) {
 
 }
 
-func EditUser() {
+// 获取用户信息
+func GetUserInfo(c *gin.Context) {
+	tokenUsername := c.GetString("token_username")
 
+	userInfo, err := model.GetUserInfo(tokenUsername)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "Error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	jsonStr, _ := json.Marshal(userInfo)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "succeed",
+		"message": "",
+		"data":    string(jsonStr),
+	})
 }
 
-func ChangePassword() {
+// 更新用户信息
+func UpdateUserInfo(c *gin.Context) {
+	email := c.PostForm("email")
+	phone := c.PostForm("phone")
+	tokenUsername := c.GetString("token_username")
 
+	err := model.UpdateUserInfo(tokenUsername, email, phone)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "Error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "Succeed",
+		"message": "",
+	})
+}
+
+// 修改密码
+func ChangePassword(c *gin.Context) {
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	newPassword := c.PostForm("new_password")
+	tokenUsername := c.GetString("token_username")
+
+	if username != tokenUsername {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "Error",
+			"message": "token error",
+		})
+		return
+	}
+
+	err := model.ChangePassword(username, password, newPassword)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "Error",
+			"message": err.Error(),
+		})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "Succeed",
+			"message": "Change password succeed",
+		})
+		return
+	}
 }

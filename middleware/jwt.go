@@ -98,7 +98,19 @@ func JwtToken() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set("username", key)
+
+		username := c.PostForm("username")
+
+		if key.UserName != username {
+			c.JSON(http.StatusOK, gin.H{
+				"status":  "Error",
+				"message": "Username error!",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Set("token_username", key.UserName)
 		c.Next()
 	}
 }

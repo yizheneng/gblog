@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/yizheneng/gblog/api"
 	"github.com/yizheneng/gblog/config"
+	"github.com/yizheneng/gblog/middleware"
 	_ "github.com/yizheneng/gblog/model"
 )
 
@@ -24,10 +25,18 @@ func initRoute() {
 		loginR.POST("/backend", api.LoginToBackEnd)
 	}
 
-	userR := r.Group("user")
+	userR1 := r.Group("user")
 	{
-		userR.POST("add", api.AddUser)
-		userR.POST("check_token", api.CheckToken)
+		userR1.POST("add", api.AddUser)
+		userR1.POST("check_token", api.CheckToken)
+	}
+
+	userR2 := r.Group("user")
+	userR2.Use(middleware.JwtToken())
+	{
+		userR2.POST("change_password", api.ChangePassword)
+		userR2.PUT("update_info", api.UpdateUserInfo)
+		userR2.POST("get_userinfo", api.GetUserInfo)
 	}
 
 	r.Run(config.ServerSettings.ServerPort)
