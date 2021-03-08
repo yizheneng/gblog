@@ -16,6 +16,7 @@
 
 # vscode file
 .vscode
+__debug_bin
 
 # go pkg file
 go.sum
