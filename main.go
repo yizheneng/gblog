@@ -28,7 +28,7 @@ func initRoute() {
 	userR1 := r.Group("user")
 	{
 		userR1.POST("add", api.AddUser)
-		userR1.POST("check_token", api.CheckToken)
+		// userR1.POST("check_token", api.CheckToken)
 	}
 
 	userR2 := r.Group("user")
@@ -40,7 +40,7 @@ func initRoute() {
 	}
 
 	backendR := r.Group("user")
-	backendR.Use(middleware.JwtToken())
+	backendR.Use(middleware.JwtBackendToken())
 	{
 		backendR.POST("get_user_list", api.GetUsers)
 	}

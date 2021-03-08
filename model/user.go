@@ -20,7 +20,7 @@ type User struct {
 // 检查用户是否存在
 func CheckUser(username string) bool {
 	var user User
-	db.Select("id").Where("user_name = ?", username).First(&user)
+	db.Model(&User{}).Select("id").Where("user_name = ?", username).First(&user)
 	if user.ID > 0 {
 		return true
 	}

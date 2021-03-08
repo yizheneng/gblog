@@ -8,6 +8,7 @@ import (
 	"github.com/yizheneng/gblog/model"
 )
 
+// 前端登录接口
 func Login(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -22,7 +23,7 @@ func Login(c *gin.Context) {
 	}
 
 	var token string
-	token, err = middleware.CreateToken(username)
+	token, err = middleware.CreateToken(username, "")
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -39,6 +40,7 @@ func Login(c *gin.Context) {
 	})
 }
 
+// 后端登录接口
 func LoginToBackEnd(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -53,7 +55,7 @@ func LoginToBackEnd(c *gin.Context) {
 	}
 
 	var token string
-	token, err = middleware.CreateToken(username)
+	token, err = middleware.CreateToken(username, "admin")
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
