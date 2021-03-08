@@ -23,7 +23,7 @@ func init() {
 	db, err = gorm.Open("mysql", dataBaseLink)
 
 	if err != nil {
-		fmt.Printf("Connect database error:", err)
+		fmt.Printf("Connect database error:%s", err.Error())
 		os.Exit(1)
 	}
 	// defer db.Close()
