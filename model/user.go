@@ -36,7 +36,7 @@ func CreateUser(data *User) error {
 // 获取用户信息
 func GetUserInfo(username string) (*User, error) {
 	var user User
-	err := db.Model(&User{}).Where("user_name = ?", username).First(&user).Error
+	err := db.Model(&User{}).Select("id,user_name,created_at,updated_at,deleted_at,role,email,phone").Where("user_name = ?", username).First(&user).Error
 	return &user, err
 }
 
@@ -48,7 +48,7 @@ func GetUsers(pageSize int, pageNum int) (users []User, total uint64, err error)
 		return
 	}
 
-	err = db.Select("id,user_name,role,email,phone").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Error
+	err = db.Model(&User{}).Select("id,user_name,created_at,updated_at,deleted_at,role,email,phone").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Error
 	if err != nil {
 		return
 	}

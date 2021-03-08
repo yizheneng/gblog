@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -51,7 +52,6 @@ func AddUser(c *gin.Context) {
 // 检查Token
 func CheckToken(c *gin.Context) {
 	token := c.PostForm("token")
-
 	claims, err := middleware.CheckToken(token)
 
 	if err != nil {
@@ -71,7 +71,33 @@ func CheckToken(c *gin.Context) {
 
 // 获取用户列表
 func GetUsers(c *gin.Context) {
+	pageSize, _ := strconv.Atoi(c.PostForm("pageSize"))
+	pageIndex, _ := strconv.Atoi(c.PostForm("pageIndex"))
 
+	if pageSize <= 0 || pageSize > 1000 {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "Error",
+			"message": "pageSize should > 0 and < 1000",
+		})
+		return
+	}
+
+	users, total, err := model.GetUsers(pageSize, pageIndex)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "Error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "Succeed",
+		"message": "",
+		"data":    users,
+		"total":   total,
+	})
 }
 
 // 删除用户
@@ -82,7 +108,6 @@ func Delete(c *gin.Context) {
 // 获取用户信息
 func GetUserInfo(c *gin.Context) {
 	tokenUsername := c.GetString("token_username")
-
 	userInfo, err := model.GetUserInfo(tokenUsername)
 
 	if err != nil {

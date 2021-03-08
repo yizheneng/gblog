@@ -39,6 +39,12 @@ func initRoute() {
 		userR2.POST("get_userinfo", api.GetUserInfo)
 	}
 
+	backendR := r.Group("user")
+	backendR.Use(middleware.JwtToken())
+	{
+		backendR.POST("get_user_list", api.GetUsers)
+	}
+
 	r.Run(config.ServerSettings.ServerPort)
 }
 
